@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="playscreen">
+
+    <canvas id="canvas"></canvas>
+    <div
+      id="movementJoy"
+      style="width: 200px; height: 200px;"
+    ></div>
+  </div>
+  </body>
+  
+  <head>
+    <script
+      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+      integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+        const socket = io();
+    </script>
+    <script src="joy.js"></script>
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="index.css">
+    
+    
+  </head>
+  <script>
+    var movementjoystick = new JoyStick("movementJoy");
+    /*
+    setInterval(function(){
+         while(movementjoystick.GetX() > 0){
+            console.log("poop")
+            $("#tempplayer").animate({
+                right:'-=10px'
+            })
+         }
+         
+         }, 10);
+         */
+  </script>
+</html>
