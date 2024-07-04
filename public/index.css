@@ -1,7 +1,15 @@
  #movementJoy {
     position: absolute;
-    top: 5px;
-    left: 100px
+    height: 15vh;
+    width: 15vh;
+    /*Had to set the width to veiwport height bc the joystick
+    becomes elongated with diff widths and width:auto doesnt seem to work
+    (sets the width to 0)
+    */
+    top: 80vh;
+    left: 1vw;
 }#playscreen{
     position: relative;
+}body{
+    overflow: hidden;
 }
