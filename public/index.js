@@ -19,30 +19,44 @@ var playerdefault = "/images/characters/triangle/gray/trianglegraystanding.png";
 
 const player = new Player(x, y, playerdefault);
 
-socket.on("updatePlayers", (players) => {
-  console.log(players);
-  for (const playerID in players) {
-    const p1 = players[playerID];
+const players = {}
+socket.on("updatePlayers", (backendPlayers) => {
+  
+  for (const playerID in backendPlayers) {
+    const backendPlayer = backendPlayers[playerID];
     if (!players[playerID]) {
-      players[playerID] = new Player(p1.x, p1.y, p1.image);
+      players[playerID] = new Player(backendPlayer.x, backendPlayer.y, backendPlayer.image);
     }
-
-
   }
-  setInterval(function () {
-    console.log("po");
-    for (const playerID in players) {
-      const player = players[playerID];
+  console.log(backendPlayers);
+
+  for (const id in players){
+    if(!backendPlayers[id]){
+      delete players[id]
+      
+    }
+    console.log(players)
+  }
+  
+setInterval(function () {
+  //console.log("po");
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  for (const playerID in players) {
+
+    const player = players[playerID];
 
     const image = new Image();
     image.src = player.image
-      console.log("going to draw");
-     
-      c.drawImage(image, player.x, player.y)
-    }
-  }, 3000);
+  
+    //console.log("going to draw");
+    
+    c.drawImage(image, player.x, player.y)
 
+  }
+}, 10);
 
 
 });
+
+
 

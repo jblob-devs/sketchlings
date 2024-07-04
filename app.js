@@ -6,7 +6,7 @@ const port = 3000;
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server);
+const io = new Server(server, {pingInterval: 1000, pingTimeout: 3000});
 
 app.use(express.static("public"));
 
@@ -34,8 +34,10 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", (reason) => {
     console.log("player disconnected: " + reason);
+
     delete players[socket.id];
     io.emit("updatePlayers", players);
+    console.log(players)
   });
 });
 
