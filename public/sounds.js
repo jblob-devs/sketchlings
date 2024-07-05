@@ -21,6 +21,10 @@ function sound(src) {
 let lobbymusicArr = [sound('audio/music/cowsonwheels.mp3'), sound('audio/music/batsinhouses.m4a')];
 let curSong = 0;
 $("#toggleMusic").on('click', function(){
+  if(!lobbymusictoggled){
+    lobbymusictoggled = true;
+    lobbymusicArr[curSong].play();
+  }
   if(lobbymusictoggled){
     lobbymusicArr[curSong].stop()
     curSong++;
