@@ -31,6 +31,17 @@ $("#toggleMusic").on('click', function(){
     else{
       lobbymusicArr[curSong].play();
     }
-    $("#toggleMusic").css("background-color", 'green')
   }
+  
 })
+
+if(lobbymusicArr[curSong].ended){
+  curSong++;
+    if(curSong == lobbymusicArr.length){
+      curSong = 0;
+      lobbymusicArr[curSong].play();
+    }
+    else{
+      lobbymusicArr[curSong].play();
+    }
+}
