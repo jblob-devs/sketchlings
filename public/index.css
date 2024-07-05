@@ -12,4 +12,15 @@
     position: relative;
 }body{
     overflow: hidden;
+}#toggleMusic{
+    position: absolute;
+    top: 3vh;
+    left: 90vw;
+}button{
+    background-color: red;
+    border-radius: 10%;
+    transition: border-radius 0.5s;
+}button:hover{
+    border-radius: 40%;
+    transition: border-radius 0.5s;
 }

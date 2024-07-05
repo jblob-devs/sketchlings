@@ -7,6 +7,7 @@
     <div
       id="movementJoy"
     ></div>
+    <button id="toggleMusic" ><img src="images/miscassets/musicnote.png" width="auto" height="20vh"/></button>
     <!--
     <img id="tempplayer" src="/images/characters/triangle/gray/trianglegraystanding.png" />
     -->
@@ -26,11 +27,13 @@
     ></script>
     <script src="joy.js"></script>
     <script src="index.js"></script>
+    <script src="sounds.js"></script>
     <link rel="stylesheet" href="index.css">
     
     
   </head>
   <script>
+    var lobbymusictoggled = false;
     var movementjoystick = new JoyStick("movementJoy",{'internalFillColor':'#F6E3BA ', 'internalStrokeColor':'#DFCAA0', 'externalLineWidth': '1', 'externalStrokeColor': '#CFB284'});
     /*
     setInterval(function(){
@@ -43,7 +46,7 @@
          
          }, 10);
          */
-
+    
 
   </script>
 </html>
