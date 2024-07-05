@@ -2,21 +2,20 @@
 //function for sounds
 
 function sound(src) {
-    this.sound = document.createElement("audio");
-    this.sound.src = src;
-    this.sound.setAttribute("preload", "auto");
-    this.sound.setAttribute("controls", "none");
-    this.sound.setAttribute("loop", "autoplay");
-    this.sound.style.display = "none";
-    document.body.appendChild(this.sound);
-    this.play = function(){
-      this.sound.play();
-    }
-    this.stop = function(){
-      this.sound.pause();
-    }
+  this.sound = document.createElement("AUDIO");
+  this.sound.src = src;
+  this.sound.setAttribute("preload", "auto");
+  this.sound.setAttribute("controls", "none");
+  this.sound.setAttribute("loop", "autoplay");
+  this.sound.style.display = "none";
+  document.body.appendChild(this.sound);
+  this.play = function(){
+    this.sound.play();
   }
-  
+  this.stop = function(){
+    this.sound.pause();
+  }
+}
 
 let lobbymusicArr = [sound('audio/music/cowsonwheels.mp3'), sound('audio/music/batsinhouses.m4a'), sound('audio/music/camelonthebeach.mp3'), sound('audio/music/downunder.mp3'), sound('audio/music/tropicalpalms.mp3'), sound('audio/music/melancholybreeze.mp3')];
 let curSong = 0;

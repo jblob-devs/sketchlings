@@ -20,6 +20,11 @@ class Player {
     this.y = y;
     this.image = image;
     this.type = type;
+    this.direction = "none";
+    this.action = 'still'
+    this.color = 'gray'
+    this.animframe = 1;
+    this.timerout = null;
   }
 }
 
@@ -34,7 +39,7 @@ io.on("connection", (socket) => {
   console.log("player connected");
 
   backplayers[socket.id] = new Player(100, 100, playerimage, 'triangle');
-
+  console.log(backplayers[socket.id].animframe)
   io.emit("updatePlayers", backplayers);
 
   console.log(backplayers);

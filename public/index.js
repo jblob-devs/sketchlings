@@ -14,6 +14,7 @@ canvas.height = innerHeight;
 const x = canvas.width / 2;
 const y = canvas.height / 2;
 class Player {
+
   constructor(x, y, image, type) {
     this.x = x;
     this.y = y;
@@ -26,11 +27,10 @@ class Player {
     this.timerout = null;
   }
 
-  
-
   draw() {
     const imageP = new Image();
     if(this.action == 'still'){
+
       this.direction = 'none'
       imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
       c.drawImage(imageP, this.x, this.y);
@@ -38,46 +38,73 @@ class Player {
     }else if(this.action == 'move'){
 
       if (this.direction == "right") {
-        console.log(this.animframe)
-          if(this.timerout == null){
-            this.timerout = 'timer'
-            setTimeout(function(){
-       
-                this.animframe += 1;
-            
-              if(this.animframe > 4){
-                this.animframe = 1
-              }
-            
-              this.timerout = null;
-              console.log(this.animframe)
-            },1000)
-            
-            
-          }
-          console.log(this.timerout)
-          imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
 
+        if(this.timerout == null){
+          this.timerout = "done"
+          var that = this
+
+          setInterval(function(){
+            
+            that.animframe++;
+
+            if(that.animframe > 4){
+              that.animframe = 1
+            }
+
+          }, 150)
+
+        }
+
+        /*
+        var that = this
+
+        if(this.timerout == null){
+
+          console.log(this.timerout)
+          that.timerout = 'timer'
+
+          setTimeout(function(){
+          
+            console.log('got here')
+            
+            that.animframe += 1;
+            
+            if(that.animframe > 4){
+                that.animframe = 1
+            }
+
+            this.timerout = null
+            console.log(this.timerout)
+
+          }, 1000)
+        }
+        */
+
+        imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
         c.drawImage(imageP, this.x, this.y);
    
       } else if (this.direction == "left") {
-        imageP.src = this.image + "standing.png";
-        c.drawImage(imageP, this.x, this.y);
-      }else if(this.direction == 'none'){
-        imageP.src = this.image + "standing.png";
-        c.drawImage(imageP, this.x, this.y);
-      }
-  
-    }
-    
 
+        imageP.src = this.image + "standing.png";
+        c.drawImage(imageP, this.x, this.y);
+
+      }else if(this.direction == 'none'){
+
+        imageP.src = this.image + "standing.png";
+        c.drawImage(imageP, this.x, this.y);
+
+      }
+    }
   }
+
 }
+
+
 var triangleDefault = "/images/characters/triangle/gray/";
 var playerdefault = triangleDefault + "standing.png";
 
-
 const players = {};
+
 socket.on("updatePlayers", (backendPlayers) => {
   for (const playerID in backendPlayers) {
     const backendPlayer = backendPlayers[playerID];
@@ -87,7 +114,7 @@ socket.on("updatePlayers", (backendPlayers) => {
         backendPlayer.y,
         backendPlayer.image,
         'triangle'
-      );
+      )
     } else {
       // if (!playerID === globalID) {
       players[playerID].x = backendPlayer.x;
@@ -167,8 +194,6 @@ setInterval(() => {
 window.addEventListener("keydown", (event) => {
   if (!players[socket.id]) return;
 
-  console.log(players);
-
   switch (event.code) {
     case "KeyW":
     
@@ -197,28 +222,24 @@ window.addEventListener("keyup", (event) => {
 
   switch (event.code) {
     case "KeyW":
-      console.log("w up");
       players[socket.id].direction = "none";
       players[socket.id].action = "still";
       keys.w.pressed = false;
       break;
 
     case "KeyA":
-      console.log("a up");
       players[socket.id].direction = "none";
       players[socket.id].action = "still";
       keys.a.pressed = false;
       break;
 
     case "KeyS":
-      console.log("s up");
       players[socket.id].direction = "none";
       players[socket.id].action = "still";
       keys.s.pressed = false;
       break;
 
     case "KeyD":
-      console.log("d up");
       players[socket.id].direction = "none";
       players[socket.id].action = "still";
       keys.d.pressed = false;
@@ -233,7 +254,6 @@ function moveAnimation(ctype, color, direction, frame){
   }else if(direction == 'none'){
     img += 'standing'
   }
-  console.log(img + '.png')
   return img + '.png';
 }
 
@@ -250,4 +270,3 @@ function update() {
 }
 
 update();
-
