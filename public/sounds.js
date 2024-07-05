@@ -18,16 +18,19 @@ function sound(src) {
   }
   
 
-let lobbymusic = new sound('audio/music/cowsonwheels.mp3')
-
+let lobbymusicArr = [sound('audio/music/cowsonwheels.mp3'), sound('audio/music/batsinhouses.m4a')];
+let curSong = 0;
 $("#toggleMusic").on('click', function(){
   if(lobbymusictoggled){
-    lobbymusictoggled  = false;
-    $("#toggleMusic").css("background-color", 'red')
-    lobbymusic.stop()
-  }else{
-    lobbymusic.play()
-    lobbymusictoggled = true;
+    lobbymusicArr[curSong].stop()
+    curSong++;
+    if(curSong == lobbymusicArr.length){
+      curSong = 0;
+      lobbymusicArr[curSong].play();
+    }
+    else{
+      lobbymusicArr[curSong].play();
+    }
     $("#toggleMusic").css("background-color", 'green')
   }
 })
