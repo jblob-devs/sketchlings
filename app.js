@@ -28,7 +28,7 @@ const backplayers = {};
 var triangleDefault = "/images/characters/triangle/gray/";
 var playerimage = triangleDefault;
 var playerSpeed = 3;
-//players speed is 5
+//players speed is 3
 
 io.on("connection", (socket) => {
   console.log("player connected");
