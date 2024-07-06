@@ -51,7 +51,7 @@ class Player {
               that.animframe = 1
             }
 
-          }, 150)
+          }, 75)
 
         }
 
@@ -164,7 +164,7 @@ const keys = {
   },
 };
 
-var playerspeed = 3;
+var playerspeed = 2;
 
 setInterval(() => {
   if (keys.w.pressed) {
@@ -216,6 +216,8 @@ window.addEventListener("keydown", (event) => {
       break;
   }
 });
+//joy stick
+
 
 window.addEventListener("keyup", (event) => {
   if (!players[socket.id]) return;

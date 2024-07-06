@@ -32,7 +32,7 @@ const backplayers = {};
 
 var triangleDefault = "/images/characters/triangle/gray/";
 var playerimage = triangleDefault;
-var playerSpeed = 3;
+var playerSpeed = 2;
 //players speed is 3
 
 io.on("connection", (socket) => {

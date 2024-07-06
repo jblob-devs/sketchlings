@@ -35,18 +35,36 @@
   <script>
     var lobbymusictoggled = false;
     var movementjoystick = new JoyStick("movementJoy",{'internalFillColor':'#F6E3BA ', 'internalStrokeColor':'#DFCAA0', 'externalLineWidth': '1', 'externalStrokeColor': '#CFB284'});
-    /*
-    setInterval(function(){
-         while(movementjoystick.GetX() > 0){
-            console.log("poop")
-            $("#tempplayer").animate({
-                right:'-=10px'
-            })
-         }
-         
-         }, 10);
-         */
-    
+
+setInterval(function(){
+  if (!players[socket.id]) return;
+
+  if(movementjoystick.GetX() > 50){
+    keys.d.pressed = true;
+    keys.a.pressed = false;
+  }
+  if(movementjoystick.GetX() < -50){
+    keys.a.pressed = true;
+    keys.d.pressed = false;
+  }
+  if(movementjoystick.GetY() > 50){
+    keys.w.pressed = true;
+    keys.s.pressed = false;
+  }
+  if(movementjoystick.GetY() < -50){
+    keys.s.pressed = true;
+    keys.w.pressed = false;
+  }
+  if(movementjoystick.GetX() == 0 && movementjoystick.GetY() == 0){
+    players[socket.id].direction = "none";
+      players[socket.id].action = "still";
+      keys.w.pressed = false;
+      keys.a.pressed = false;
+      keys.s.pressed = false;
+      keys.d.pressed = false;
+  }
+},15)
+
 
   </script>
 </html>

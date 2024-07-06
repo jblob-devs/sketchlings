@@ -17,11 +17,12 @@ function sound(src) {
   }
 }
 
-let lobbymusicArr = [sound('audio/music/cowsonwheels.mp3'), sound('audio/music/batsinhouses.m4a'), sound('audio/music/camelonthebeach.mp3'), sound('audio/music/downunder.mp3'), sound('audio/music/tropicalpalms.mp3'), sound('audio/music/melancholybreeze.mp3')];
+let lobbymusicArr = [new sound('audio/music/cowsonwheels.mp3'), new sound('audio/music/batsinhouses.m4a'), new sound('audio/music/camelonthebeach.mp3'),  new sound('audio/music/downunder.mp3'), new sound('audio/music/palmsandall.mp3'), new sound('audio/music/melancholybreeze.mp3')];
 let curSong = 0;
 $("#toggleMusic").on('click', function(){
   if(!lobbymusictoggled){
     lobbymusictoggled = true;
+    $("#toggleMusic").css('background-color', 'green')
     lobbymusicArr[curSong].play();
   }
   if(lobbymusictoggled){
