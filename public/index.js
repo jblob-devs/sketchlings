@@ -149,6 +149,8 @@ setInterval(function () {
 */
 });
 
+
+
 const keys = {
   w: {
     pressed: false,
@@ -272,3 +274,4 @@ function update() {
 }
 
 update();
+

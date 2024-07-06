@@ -17,7 +17,7 @@ function sound(src) {
   }
 }
 
-let lobbymusicArr = [new sound('audio/music/cowsonwheels.mp3'), new sound('audio/music/batsinhouses.m4a'), new sound('audio/music/camelonthebeach.mp3'),  new sound('audio/music/downunder.mp3'), new sound('audio/music/palmsandall.mp3'), new sound('audio/music/melancholybreeze.mp3')];
+let lobbymusicArr = [new sound('audio/music/cowsonwheels.mp3'), new sound('audio/music/batsinhouses.mp3'), new sound('audio/music/camelonthebeach.mp3'),  new sound('audio/music/downunder.mp3'), new sound('audio/music/palmsandall.mp3'), new sound('audio/music/melancholybreeze.mp3')];
 let curSong = 0;
 $("#toggleMusic").on('click', function(){
   if(!lobbymusictoggled){
