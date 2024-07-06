@@ -15,7 +15,7 @@ const x = canvas.width / 2;
 const y = canvas.height / 2;
 class Player {
 
-  constructor(x, y, image, type) {
+  constructor(x, y, image, type, room) {
     this.x = x;
     this.y = y;
     this.image = image;
@@ -25,6 +25,7 @@ class Player {
     this.color = 'gray'
     this.animframe = 1;
     this.timerout = null;
+    this.room = 0;
   }
 
   draw() {
@@ -34,12 +35,12 @@ class Player {
 
       this.direction = 'none'
       imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
-      c.drawImage(imageP, this.x, this.y);
-      
+      //c.drawImage(imageP, this.x, this.y);
+
     }else if(this.action == 'move'){
 
       if (this.direction == "right") {
-
+        
         if(this.timerout == null){
           this.timerout = "done"
           var that = this
@@ -56,29 +57,31 @@ class Player {
 
         }
         
-        
         imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
-        c.drawImage(imageP, this.x, this.y);
+        //c.drawImage(imageP, this.x, this.y);
+
       } else if (this.direction == "left") {
 
-        imageP.src = this.image + "standing.png";
-        c.drawImage(imageP, this.x, this.y);
+        imageP.src = this.image
+        //c.drawImage(imageP, this.x, this.y);
 
       }else if(this.direction == 'none'){
 
-        imageP.src = this.image + "standing.png";
-        c.drawImage(imageP, this.x, this.y);
+        imageP.src = this.image
+        //c.drawImage(imageP, this.x, this.y);
 
       }
     }
+
+  imageP.src = 'images/characters/triangle/gray/runrightframe4.png'
+
+   socket.emit('updateAnim', imageP.src)
+    
   }
 
 }
 
-
-var triangleDefault = "/images/characters/triangle/gray/";
-var playerdefault = triangleDefault + "standing.png";
-
+let room = 0;
 const players = {};
 
 socket.on("updatePlayers", (backendPlayers) => {
@@ -89,14 +92,17 @@ socket.on("updatePlayers", (backendPlayers) => {
         backendPlayer.x,
         backendPlayer.y,
         backendPlayer.image,
-        'triangle'
+        'triangle',
+        backendPlayer.room
       )
+      console.log(backendPlayer.room)
     } else {
-      // if (!playerID === globalID) {
       players[playerID].x = backendPlayer.x;
       players[playerID].y = backendPlayer.y;
-      // }
       players[playerID].image = backendPlayer.image;
+      //players[playerID].direction = backendPlayer.direction;
+      //players[playerID].action = backendPlayer.action;
+      players[playerID].room = backendPlayer.room;
     }
   }
 
@@ -199,27 +205,30 @@ window.addEventListener("keydown", (event) => {
 
 window.addEventListener("keyup", (event) => {
   if (!players[socket.id]) return;
-
   switch (event.code) {
     case "KeyW":
+      socket.emit('keyup')
       players[socket.id].direction = "none";
       players[socket.id].action = "still";
       keys.w.pressed = false;
       break;
 
     case "KeyA":
+      socket.emit('keyup')
       players[socket.id].direction = "none";
       players[socket.id].action = "still";
       keys.a.pressed = false;
       break;
 
     case "KeyS":
+      socket.emit('keyup')
       players[socket.id].direction = "none";
       players[socket.id].action = "still";
       keys.s.pressed = false;
       break;
 
     case "KeyD":
+      socket.emit('keyup')
       players[socket.id].direction = "none";
       players[socket.id].action = "still";
       keys.d.pressed = false;
@@ -232,7 +241,7 @@ function moveAnimation(ctype, color, direction, frame){
   if(direction == 'right'){
     img +=  'runrightframe' + frame
   }else if(direction == 'none'){
-    img += 'standing'
+    img += 'standing1'
   }
   return img + '.png';
 }
@@ -242,11 +251,20 @@ function update() {
 
   // Draw all players
   for (let id in players) {
-      players[id].draw();
+    console.log(players)
+    const newimg = new Image()
+    newimg.src = players[id].image
+    c.drawImage(newimg, players[id].x, players[id].y)
+     // players[id].draw();
   }
  
   // Request the next frame
   requestAnimationFrame(update);
+}
+
+function changeRoom(num){
+  room = num;
+  players[socket.id].room = room;
 }
 
 update();

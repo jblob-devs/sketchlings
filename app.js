@@ -25,24 +25,27 @@ class Player {
     this.color = 'gray'
     this.animframe = 1;
     this.timerout = null;
+    this.room = 0;
   }
+
 }
 
 const backplayers = {};
 
-var triangleDefault = "/images/characters/triangle/gray/";
+var triangleDefault = "/images/characters/triangle/gray/standing1";
+var circleDefault;
+var squareDefault;
 var playerimage = triangleDefault;
 var playerSpeed = 2;
-//players speed is 3
+//players speed is 2
 
 io.on("connection", (socket) => {
   console.log("player connected");
 
   backplayers[socket.id] = new Player(100, 100, playerimage, 'triangle');
-  console.log(backplayers[socket.id].animframe)
   io.emit("updatePlayers", backplayers);
 
-  console.log(backplayers);
+  //console.log(backplayers);
 
   socket.on("disconnect", (reason) => {
     console.log("player disconnected: " + reason);
@@ -53,11 +56,13 @@ io.on("connection", (socket) => {
 
   //move player
   socket.on("keypress", (keycode) => {
+    this.action = 'move'
     switch (keycode) {
       case "KeyW":
         backplayers[socket.id].y -= playerSpeed;
         break;
       case "KeyA":
+        this.direction = 'left'
         backplayers[socket.id].x -= playerSpeed;
        // backplayers[socket.id].direction = 'left'
         break;
@@ -65,11 +70,22 @@ io.on("connection", (socket) => {
         backplayers[socket.id].y += playerSpeed;
         break;
       case "KeyD":
+        this.direction = 'right'
         backplayers[socket.id].x += playerSpeed;
         //backplayers[socket.id].direction = 'right'
         break;
     }
   });
+
+  socket.on('updateAnim', (imageemitted) =>{
+    backplayers[socket.id].image = imageemitted;
+  })
+
+  socket.on('keyup', () => {
+    backplayers[socket.id].direction = 'none'
+    backplayers[socket.id].action = 'still'
+  })
+
 });
 
 server.listen(port, () => {
