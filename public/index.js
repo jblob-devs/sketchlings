@@ -28,6 +28,7 @@ class Player {
   }
 
   draw() {
+
     const imageP = new Image();
     if(this.action == 'still'){
 
@@ -54,35 +55,10 @@ class Player {
           }, 75)
 
         }
-
-        /*
-        var that = this
-
-        if(this.timerout == null){
-
-          console.log(this.timerout)
-          that.timerout = 'timer'
-
-          setTimeout(function(){
-          
-            console.log('got here')
-            
-            that.animframe += 1;
-            
-            if(that.animframe > 4){
-                that.animframe = 1
-            }
-
-            this.timerout = null
-            console.log(this.timerout)
-
-          }, 1000)
-        }
-        */
-
+        
+        
         imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
         c.drawImage(imageP, this.x, this.y);
-   
       } else if (this.direction == "left") {
 
         imageP.src = this.image + "standing.png";
@@ -120,7 +96,7 @@ socket.on("updatePlayers", (backendPlayers) => {
       players[playerID].x = backendPlayer.x;
       players[playerID].y = backendPlayer.y;
       // }
-      //players[playerID].image = backendPlayer.image;
+      players[playerID].image = backendPlayer.image;
     }
   }
 
