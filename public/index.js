@@ -13,6 +13,7 @@ canvas.height = innerHeight;
 
 const x = canvas.width / 2;
 const y = canvas.height / 2;
+
 class Player {
 
   constructor(x, y, image, type, room) {
@@ -21,25 +22,31 @@ class Player {
     this.image = image;
     this.type = type;
     this.direction = "none";
-    this.action = 'still'
+    this.action = 'cheese'
     this.color = 'gray'
     this.animframe = 1;
     this.timerout = null;
     this.room = 0;
+
+    console.log(this.action)
   }
 
   draw() {
 
     const imageP = new Image();
-    if(this.action == 'still'){
 
-      this.direction = 'none'
+    console.log(this.action)
+
+    if(this.action == 'still'){
+      
+      // console.log('<--- Counter: Amt of rights sairam has lost')
+      //this.direction = 'none'
       imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
       //c.drawImage(imageP, this.x, this.y);
 
     }else if(this.action == 'move'){
 
-      if (this.direction == "right") {
+      if (this.direction == "right" ||this.direction == "left" ) {
         
         if(this.timerout == null){
           this.timerout = "done"
@@ -60,11 +67,6 @@ class Player {
         imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
         //c.drawImage(imageP, this.x, this.y);
 
-      } else if (this.direction == "left") {
-
-        imageP.src = this.image
-        //c.drawImage(imageP, this.x, this.y);
-
       }else if(this.direction == 'none'){
 
         imageP.src = this.image
@@ -73,8 +75,8 @@ class Player {
       }
     }
 
-  imageP.src = 'images/characters/triangle/gray/runrightframe4.png'
-
+  //imageP.src = 'images/characters/triangle/gray/runrightframe4.png'
+  
    socket.emit('updateAnim', imageP.src)
     
   }
@@ -100,8 +102,8 @@ socket.on("updatePlayers", (backendPlayers) => {
       players[playerID].x = backendPlayer.x;
       players[playerID].y = backendPlayer.y;
       players[playerID].image = backendPlayer.image;
-      //players[playerID].direction = backendPlayer.direction;
-      //players[playerID].action = backendPlayer.action;
+      players[playerID].direction = backendPlayer.direction;
+      players[playerID].action = backendPlayer.action;
       players[playerID].room = backendPlayer.room;
     }
   }
@@ -151,31 +153,27 @@ const keys = {
 var playerspeed = 2;
 
 setInterval(() => {
+  if (!players[socket.id]) return;
   if (keys.w.pressed) {
-    players[socket.id].action = "move";
     players[socket.id].y -= playerspeed;
     socket.emit("keypress", "KeyW");
   }
   if (keys.a.pressed) {
     players[socket.id].x -= playerspeed;
-    players[socket.id].action = "move";
-    players[socket.id].direction = "left";
     socket.emit("keypress", "KeyA");
   }
   if (keys.s.pressed) {
     players[socket.id].y += playerspeed;
-    players[socket.id].action = "move";
     socket.emit("keypress", "KeyS");
   }
   if (keys.d.pressed) {
     players[socket.id].x += playerspeed;
-    players[socket.id].direction = "right";
-    players[socket.id].action = "move";
     socket.emit("keypress", "KeyD");
   }
 }, 15);
 
 window.addEventListener("keydown", (event) => {
+
   if (!players[socket.id]) return;
 
   switch (event.code) {
@@ -204,33 +202,27 @@ window.addEventListener("keydown", (event) => {
 
 
 window.addEventListener("keyup", (event) => {
+
   if (!players[socket.id]) return;
   switch (event.code) {
+ 
     case "KeyW":
       socket.emit('keyup')
-      players[socket.id].direction = "none";
-      players[socket.id].action = "still";
       keys.w.pressed = false;
       break;
 
     case "KeyA":
       socket.emit('keyup')
-      players[socket.id].direction = "none";
-      players[socket.id].action = "still";
       keys.a.pressed = false;
       break;
 
     case "KeyS":
       socket.emit('keyup')
-      players[socket.id].direction = "none";
-      players[socket.id].action = "still";
       keys.s.pressed = false;
       break;
 
     case "KeyD":
       socket.emit('keyup')
-      players[socket.id].direction = "none";
-      players[socket.id].action = "still";
       keys.d.pressed = false;
       break;
   }
@@ -240,7 +232,10 @@ function moveAnimation(ctype, color, direction, frame){
   let img = "/images/characters/" + ctype+ "/" + color + "/"
   if(direction == 'right'){
     img +=  'runrightframe' + frame
-  }else if(direction == 'none'){
+  }else if(direction == 'left'){
+    img += 'runleftframe' + frame
+  }
+  else if(direction == 'none'){
     img += 'standing1'
   }
   return img + '.png';
@@ -248,19 +243,23 @@ function moveAnimation(ctype, color, direction, frame){
 
 function update() {
   c.clearRect(0, 0, canvas.width, canvas.height);
-
+  //console.log('ue')
   // Draw all players
+  let newimg;
   for (let id in players) {
-    console.log(players)
-    const newimg = new Image()
+    //console.log(players)
+    players[id].draw();
+    newimg = new Image()
     newimg.src = players[id].image
     c.drawImage(newimg, players[id].x, players[id].y)
-     // players[id].draw();
+
   }
  
   // Request the next frame
   requestAnimationFrame(update);
 }
+
+//setInterval(update, 15)
 
 function changeRoom(num){
   room = num;

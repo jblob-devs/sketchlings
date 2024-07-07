@@ -21,7 +21,7 @@ class Player {
     this.image = image;
     this.type = type;
     this.direction = "none";
-    this.action = 'still'
+    this.action = 'amogus'
     this.color = 'gray'
     this.animframe = 1;
     this.timerout = null;
@@ -32,7 +32,7 @@ class Player {
 
 const backplayers = {};
 
-var triangleDefault = "/images/characters/triangle/gray/standing1";
+var triangleDefault = "/images/characters/triangle/gray/standing1.png";
 var circleDefault;
 var squareDefault;
 var playerimage = triangleDefault;
@@ -41,8 +41,9 @@ var playerSpeed = 2;
 
 io.on("connection", (socket) => {
   console.log("player connected");
-
+  io.emit("updatePlayers", backplayers);
   backplayers[socket.id] = new Player(100, 100, playerimage, 'triangle');
+
   io.emit("updatePlayers", backplayers);
 
   //console.log(backplayers);
@@ -56,21 +57,27 @@ io.on("connection", (socket) => {
 
   //move player
   socket.on("keypress", (keycode) => {
-    this.action = 'move'
+    
     switch (keycode) {
       case "KeyW":
+        backplayers[socket.id].action = 'move'
+        backplayers[socket.id].direction = "none";
         backplayers[socket.id].y -= playerSpeed;
         break;
       case "KeyA":
-        this.direction = 'left'
+        backplayers[socket.id].direction = 'left'
+        backplayers[socket.id].action = 'move'
         backplayers[socket.id].x -= playerSpeed;
        // backplayers[socket.id].direction = 'left'
         break;
       case "KeyS":
+        backplayers[socket.id].action = 'move'
+        backplayers[socket.id].direction = "none";
         backplayers[socket.id].y += playerSpeed;
         break;
       case "KeyD":
-        this.direction = 'right'
+        backplayers[socket.id].direction = 'right'
+        backplayers[socket.id].action = 'move'
         backplayers[socket.id].x += playerSpeed;
         //backplayers[socket.id].direction = 'right'
         break;
@@ -80,12 +87,12 @@ io.on("connection", (socket) => {
   socket.on('updateAnim', (imageemitted) =>{
     backplayers[socket.id].image = imageemitted;
   })
-
+  
   socket.on('keyup', () => {
     backplayers[socket.id].direction = 'none'
     backplayers[socket.id].action = 'still'
   })
-
+  
 });
 
 server.listen(port, () => {
