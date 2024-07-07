@@ -40,13 +40,12 @@ class Player {
     if(this.action == 'still'){
       
       // console.log('<--- Counter: Amt of rights sairam has lost')
-      //this.direction = 'none'
-      imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
+      imageP.src = moveAnimation(this.type, this.color, 'still', this.animframe)
       //c.drawImage(imageP, this.x, this.y);
 
     }else if(this.action == 'move'){
 
-      if (this.direction == "right" ||this.direction == "left" ) {
+      if (this.direction == "right" || this.direction == "left" ) {
         
         if(this.timerout == null){
           this.timerout = "done"
@@ -65,11 +64,6 @@ class Player {
         }
         
         imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
-        //c.drawImage(imageP, this.x, this.y);
-
-      }else if(this.direction == 'none'){
-
-        imageP.src = this.image
         //c.drawImage(imageP, this.x, this.y);
 
       }
@@ -131,6 +125,7 @@ setInterval(function () {
   }
 }, 10);
 */
+update();
 });
 
 
@@ -230,17 +225,18 @@ window.addEventListener("keyup", (event) => {
 
 function moveAnimation(ctype, color, direction, frame){
   let img = "/images/characters/" + ctype+ "/" + color + "/"
-  if(direction == 'right'){
+  if(direction == 'still'){
+   img += 'standing1'
+  }
+  else if(direction == 'right'){
     img +=  'runrightframe' + frame
   }else if(direction == 'left'){
     img += 'runleftframe' + frame
   }
-  else if(direction == 'none'){
-    img += 'standing1'
-  }
+
+ 
   return img + '.png';
 }
-
 function update() {
   c.clearRect(0, 0, canvas.width, canvas.height);
   //console.log('ue')
@@ -249,14 +245,15 @@ function update() {
   for (let id in players) {
     //console.log(players)
     players[id].draw();
+    //console.log(players)
     newimg = new Image()
     newimg.src = players[id].image
+   // newimg.src = testingimage
     c.drawImage(newimg, players[id].x, players[id].y)
-
   }
  
   // Request the next frame
-  requestAnimationFrame(update);
+  //requestAnimationFrame(update);
 }
 
 //setInterval(update, 15)
@@ -266,5 +263,5 @@ function changeRoom(num){
   players[socket.id].room = room;
 }
 
-update();
+
 

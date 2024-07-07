@@ -61,7 +61,6 @@ io.on("connection", (socket) => {
     switch (keycode) {
       case "KeyW":
         backplayers[socket.id].action = 'move'
-        backplayers[socket.id].direction = "none";
         backplayers[socket.id].y -= playerSpeed;
         break;
       case "KeyA":
@@ -72,7 +71,6 @@ io.on("connection", (socket) => {
         break;
       case "KeyS":
         backplayers[socket.id].action = 'move'
-        backplayers[socket.id].direction = "none";
         backplayers[socket.id].y += playerSpeed;
         break;
       case "KeyD":
@@ -89,7 +87,6 @@ io.on("connection", (socket) => {
   })
   
   socket.on('keyup', () => {
-    backplayers[socket.id].direction = 'none'
     backplayers[socket.id].action = 'still'
   })
   
