@@ -21,7 +21,7 @@ class Player {
     this.image = image;
     this.type = type;
     this.direction = "none";
-    this.action = 'amogus'
+    this.action = 'still'
     this.color = 'gray'
     this.animframe = 1;
     this.timerout = null;
@@ -41,10 +41,9 @@ var playerSpeed = 2;
 
 io.on("connection", (socket) => {
   console.log("player connected");
-  io.emit("updatePlayers", backplayers);
   backplayers[socket.id] = new Player(100, 100, playerimage, 'triangle');
 
-  io.emit("updatePlayers", backplayers);
+  // io.emit("updatePlayers", backplayers);
 
   //console.log(backplayers);
 
@@ -57,7 +56,6 @@ io.on("connection", (socket) => {
 
   //move player
   socket.on("keypress", (keycode) => {
-    
     switch (keycode) {
       case "KeyW":
         backplayers[socket.id].action = 'move'

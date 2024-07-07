@@ -22,7 +22,7 @@ class Player {
     this.image = image;
     this.type = type;
     this.direction = "none";
-    this.action = 'cheese'
+    this.action = 'still'
     this.color = 'gray'
     this.animframe = 1;
     this.timerout = null;
@@ -50,7 +50,7 @@ class Player {
         if(this.timerout == null){
           this.timerout = "done"
           var that = this
-
+          
           setInterval(function(){
             
             that.animframe++;
@@ -70,7 +70,6 @@ class Player {
     }
 
   //imageP.src = 'images/characters/triangle/gray/runrightframe4.png'
-  
    socket.emit('updateAnim', imageP.src)
     
   }
@@ -81,8 +80,8 @@ let room = 0;
 const players = {};
 
 socket.on("updatePlayers", (backendPlayers) => {
-  for (const playerID in backendPlayers) {
-    const backendPlayer = backendPlayers[playerID];
+  for (let playerID in backendPlayers) {
+    let backendPlayer = backendPlayers[playerID];
     if (!players[playerID]) {
       players[playerID] = new Player(
         backendPlayer.x,
@@ -93,13 +92,21 @@ socket.on("updatePlayers", (backendPlayers) => {
       )
       console.log(backendPlayer.room)
     } else {
-      players[playerID].x = backendPlayer.x;
-      players[playerID].y = backendPlayer.y;
-      players[playerID].image = backendPlayer.image;
-      players[playerID].direction = backendPlayer.direction;
-      players[playerID].action = backendPlayer.action;
-      players[playerID].room = backendPlayer.room;
+      if(playerID == socket.id){
+        players[playerID].x = backendPlayer.x;
+        players[playerID].y = backendPlayer.y;
+        //players[playerID].image = backendPlayer.image;
+        players[playerID].direction = backendPlayer.direction;
+        players[playerID].action = backendPlayer.action;
+        players[playerID].room = backendPlayer.room;
+      }else{
+        players[playerID].x = backendPlayer.x;
+        players[playerID].y = backendPlayer.y;
+      }
+      
     }
+    players[playerID].image = backendPlayer.image;
+
   }
 
   for (const id in players) {
@@ -107,25 +114,7 @@ socket.on("updatePlayers", (backendPlayers) => {
       delete players[id];
     }
   }
-  /*
-setInterval(function () {
-  //console.log("po");
-  c.clearRect(0, 0, canvas.width, canvas.height);
-  for (const playerID in players) {
 
-    const player = players[playerID];
-
-    const image = new Image();
-    image.src = player.image
-  
-    //console.log("going to draw");
-    
-    c.drawImage(image, player.x, player.y)
-
-  }
-}, 10);
-*/
-update();
 });
 
 
@@ -241,19 +230,21 @@ function update() {
   c.clearRect(0, 0, canvas.width, canvas.height);
   //console.log('ue')
   // Draw all players
-  let newimg;
+  
   for (let id in players) {
     //console.log(players)
     players[id].draw();
     //console.log(players)
+    let newimg;
     newimg = new Image()
     newimg.src = players[id].image
+    //console.log(players[id].image)
    // newimg.src = testingimage
     c.drawImage(newimg, players[id].x, players[id].y)
   }
  
   // Request the next frame
-  //requestAnimationFrame(update);
+  requestAnimationFrame(update);
 }
 
 //setInterval(update, 15)
@@ -264,4 +255,4 @@ function changeRoom(num){
 }
 
 
-
+update()
