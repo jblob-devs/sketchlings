@@ -25,24 +25,31 @@ class Player {
     this.color = 'gray'
     this.animframe = 1;
     this.timerout = null;
+    this.room = 0;
   }
+
+  changeRoom(room) {
+    this.room = room;
+  }
+
 }
 
 const backplayers = {};
 
-var triangleDefault = "/images/characters/triangle/gray/";
+var triangleDefault = "/images/characters/triangle/gray/standing1.png";
+var circleDefault;
+var squareDefault;
 var playerimage = triangleDefault;
 var playerSpeed = 2;
-//players speed is 3
+//players speed is 2
 
 io.on("connection", (socket) => {
   console.log("player connected");
-
   backplayers[socket.id] = new Player(100, 100, playerimage, 'triangle');
-  console.log(backplayers[socket.id].animframe)
-  io.emit("updatePlayers", backplayers);
+  backplayers[socket.id].changeRoom(0);
+  // io.emit("updatePlayers", backplayers);
 
-  console.log(backplayers);
+  //console.log(backplayers);
 
   socket.on("disconnect", (reason) => {
     console.log("player disconnected: " + reason);
@@ -55,27 +62,56 @@ io.on("connection", (socket) => {
   socket.on("keypress", (keycode) => {
     switch (keycode) {
       case "KeyW":
+        backplayers[socket.id].action = 'move'
         backplayers[socket.id].y -= playerSpeed;
         break;
       case "KeyA":
+        backplayers[socket.id].direction = 'left'
+        backplayers[socket.id].action = 'move'
         backplayers[socket.id].x -= playerSpeed;
        // backplayers[socket.id].direction = 'left'
         break;
       case "KeyS":
+        backplayers[socket.id].action = 'move'
         backplayers[socket.id].y += playerSpeed;
         break;
       case "KeyD":
+        backplayers[socket.id].direction = 'right'
+        backplayers[socket.id].action = 'move'
         backplayers[socket.id].x += playerSpeed;
         //backplayers[socket.id].direction = 'right'
         break;
     }
   });
+
+  socket.on('updateAnim', (imageemitted) =>{
+    backplayers[socket.id].image = imageemitted;
+  })
+  
+  socket.on('keyup', () => {
+    backplayers[socket.id].action = 'still'
+  })
+
+  socket.on('changeRoom', (room) => {
+    backplayers[socket.id].room = room;
+    
+  })
+  
 });
 
 server.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
+
 setInterval(() => {
   io.emit("updatePlayers", backplayers);
 }, 15);
+
+var fs = require('fs');
+let lobbymusiclist = []
+
+fs.readdirSync('public/audio/music/lobby/').forEach(file => {
+  lobbymusiclist.push(file)
+  io.emit('sendLobbyMusic', lobbymusiclist)
+})

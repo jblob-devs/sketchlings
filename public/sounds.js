@@ -1,6 +1,4 @@
-
 //function for sounds
-
 function sound(src) {
   this.sound = document.createElement("AUDIO");
   this.sound.src = src;
@@ -17,9 +15,21 @@ function sound(src) {
   }
 }
 
-let lobbymusicArr = [new sound('audio/music/cowsonwheels.mp3'), new sound('audio/music/batsinhouses.mp3'), new sound('audio/music/camelonthebeach.mp3'),  new sound('audio/music/downunder.mp3'), new sound('audio/music/palmsandall.mp3'), new sound('audio/music/melancholybreeze.mp3')];
+let lobbymusicArr = []
 let curSong = 0;
+
+socket.on('sendLobbyMusic', (musiclist)=>{
+  let arr;
+  for(let i in musiclist){
+    arr[i] = new sound("audio/music/lobby/" + musiclist[i])
+  }
+  console.log(arr)
+  lobbymusicArr = arr
+})
+
+
 $("#toggleMusic").on('click', function(){
+  console.log(lobbymusicArr)
   if(!lobbymusictoggled){
     lobbymusictoggled = true;
     $("#toggleMusic").css('background-color', 'green')
@@ -49,3 +59,4 @@ if(lobbymusicArr[curSong].ended){
       lobbymusicArr[curSong].play();
     }
 }
+

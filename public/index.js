@@ -3,9 +3,11 @@ const c = canvas.getContext("2d");
 const socket = io();
 console.log("connected to server");
 let globalID = "";
+
+
 //const scoreEl = document.querySelector('#scoreEl')
 socket.on("connect", () => {
-  console.log(socket.id);
+  console.log("SID",socket.id);
   globalID = socket.id;
 });
 canvas.width = innerWidth;
@@ -13,9 +15,10 @@ canvas.height = innerHeight;
 
 const x = canvas.width / 2;
 const y = canvas.height / 2;
+
 class Player {
 
-  constructor(x, y, image, type) {
+  constructor(x, y, image, type, room) {
     this.x = x;
     this.y = y;
     this.image = image;
@@ -25,25 +28,28 @@ class Player {
     this.color = 'gray'
     this.animframe = 1;
     this.timerout = null;
+    this.room = 0;
   }
 
   draw() {
 
-    const imageP = new Image();
-    if(this.action == 'still'){
 
-      this.direction = 'none'
-      imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
-      c.drawImage(imageP, this.x, this.y);
+    //console.log(this.action)
+
+    if(this.action == 'still'){
       
+      // console.log('<--- Counter: Amt of rights sairam has lost')
+      this.image = moveAnimation(this.type, this.color, 'still', this.animframe)
+      //c.drawImage(imageP, this.x, this.y);
+
     }else if(this.action == 'move'){
 
-      if (this.direction == "right") {
-
+      if (this.direction == "right" || this.direction == "left" ) {
+        
         if(this.timerout == null){
           this.timerout = "done"
           var that = this
-
+          
           setInterval(function(){
             
             that.animframe++;
@@ -56,73 +62,71 @@ class Player {
 
         }
         
-        
-        imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
-        c.drawImage(imageP, this.x, this.y);
-      } else if (this.direction == "left") {
-
-        imageP.src = this.image + "standing.png";
-        c.drawImage(imageP, this.x, this.y);
-
-      }else if(this.direction == 'none'){
-
-        imageP.src = this.image + "standing.png";
-        c.drawImage(imageP, this.x, this.y);
+       this.image = moveAnimation(this.type, this.color, this.direction, this.animframe)
+        //c.drawImage(imageP, this.x, this.y);
 
       }
     }
+
+  //imageP.src = 'images/characters/triangle/gray/runrightframe4.png'
+  //console.log(this.image)
+   socket.emit('updateAnim', this.image)
+    
   }
 
 }
 
-
-var triangleDefault = "/images/characters/triangle/gray/";
-var playerdefault = triangleDefault + "standing.png";
-
+let room = 0;
 const players = {};
+let curRoom = -1;
 
 socket.on("updatePlayers", (backendPlayers) => {
-  for (const playerID in backendPlayers) {
-    const backendPlayer = backendPlayers[playerID];
+  for (let playerID in backendPlayers) {
+    let backendPlayer = backendPlayers[playerID];
     if (!players[playerID]) {
       players[playerID] = new Player(
         backendPlayer.x,
         backendPlayer.y,
         backendPlayer.image,
-        'triangle'
+        'triangle',
+        backendPlayer.room
       )
+      //console.log(backendPlayer.room)
     } else {
-      // if (!playerID === globalID) {
-      players[playerID].x = backendPlayer.x;
-      players[playerID].y = backendPlayer.y;
-      // }
-      players[playerID].image = backendPlayer.image;
+      if(playerID == socket.id){
+        players[playerID].x = backendPlayer.x;
+        players[playerID].y = backendPlayer.y;
+        //players[playerID].image = backendPlayer.image;
+        players[playerID].direction = backendPlayer.direction;
+        players[playerID].action = backendPlayer.action;
+        players[playerID].room = backendPlayer.room;
+      }else{
+        players[playerID].x = backendPlayer.x;
+        players[playerID].y = backendPlayer.y;
+        players[playerID].direction = backendPlayer.direction;
+        players[playerID].action = backendPlayer.action;
+        players[playerID].room = backendPlayer.room;
+        //players[playerID].image = backendPlayer.image;
+      }
+      
     }
+    if(curRoom != players[playerID].room){
+      //call change room function
+      curRoom = players[playerID].room
+    }
+    // console.log(players)
+
+    players[playerID].image = backendPlayer.image;
+    // console.log(players[playerID].image)
   }
 
   for (const id in players) {
     if (!backendPlayers[id]) {
+      console.log("deleting player", id);
       delete players[id];
     }
   }
-  /*
-setInterval(function () {
-  //console.log("po");
-  c.clearRect(0, 0, canvas.width, canvas.height);
-  for (const playerID in players) {
 
-    const player = players[playerID];
-
-    const image = new Image();
-    image.src = player.image
-  
-    //console.log("going to draw");
-    
-    c.drawImage(image, player.x, player.y)
-
-  }
-}, 10);
-*/
 });
 
 
@@ -142,34 +146,24 @@ const keys = {
   },
 };
 
-var playerspeed = 2;
-
 setInterval(() => {
+  if (!players[socket.id]) return;
   if (keys.w.pressed) {
-    players[socket.id].action = "move";
-    players[socket.id].y -= playerspeed;
     socket.emit("keypress", "KeyW");
   }
   if (keys.a.pressed) {
-    players[socket.id].x -= playerspeed;
-    players[socket.id].action = "move";
-    players[socket.id].direction = "left";
     socket.emit("keypress", "KeyA");
   }
   if (keys.s.pressed) {
-    players[socket.id].y += playerspeed;
-    players[socket.id].action = "move";
     socket.emit("keypress", "KeyS");
   }
   if (keys.d.pressed) {
-    players[socket.id].x += playerspeed;
-    players[socket.id].direction = "right";
-    players[socket.id].action = "move";
     socket.emit("keypress", "KeyD");
   }
 }, 15);
 
 window.addEventListener("keydown", (event) => {
+
   if (!players[socket.id]) return;
 
   switch (event.code) {
@@ -198,30 +192,27 @@ window.addEventListener("keydown", (event) => {
 
 
 window.addEventListener("keyup", (event) => {
-  if (!players[socket.id]) return;
 
+  if (!players[socket.id]) return;
   switch (event.code) {
+ 
     case "KeyW":
-      players[socket.id].direction = "none";
-      players[socket.id].action = "still";
+      socket.emit('keyup')
       keys.w.pressed = false;
       break;
 
     case "KeyA":
-      players[socket.id].direction = "none";
-      players[socket.id].action = "still";
+      socket.emit('keyup')
       keys.a.pressed = false;
       break;
 
     case "KeyS":
-      players[socket.id].direction = "none";
-      players[socket.id].action = "still";
+      socket.emit('keyup')
       keys.s.pressed = false;
       break;
 
     case "KeyD":
-      players[socket.id].direction = "none";
-      players[socket.id].action = "still";
+      socket.emit('keyup')
       keys.d.pressed = false;
       break;
   }
@@ -229,25 +220,55 @@ window.addEventListener("keyup", (event) => {
 
 function moveAnimation(ctype, color, direction, frame){
   let img = "/images/characters/" + ctype+ "/" + color + "/"
-  if(direction == 'right'){
-    img +=  'runrightframe' + frame
-  }else if(direction == 'none'){
-    img += 'standing'
+  if(direction == 'still'){
+   img += 'standing1'
   }
+  else if(direction == 'right'){
+    img +=  'runrightframe' + frame
+  }else if(direction == 'left'){
+    img += 'runleftframe' + frame
+  }
+
+ 
   return img + '.png';
 }
-
 function update() {
   c.clearRect(0, 0, canvas.width, canvas.height);
-
+  //console.log('ue')
   // Draw all players
+  drawRoom(curRoom)
   for (let id in players) {
-      players[id].draw();
+    //console.log(players[id].room)
+    if (players[id].room != curRoom) {
+      continue;
+    }
+    //console.log(players)
+    players[id].draw();
+    //console.log(players)
+    let newimg;
+    newimg = new Image()
+    newimg.src = players[id].image
+    //console.log(players[id].image)
+   // newimg.src = testingimage
+  //  console.log(players[id].image)
+    c.drawImage(newimg, players[id].x, players[id].y)
   }
  
   // Request the next frame
   requestAnimationFrame(update);
 }
 
-update();
+function changeRoom(r) {
+  socket.emit("changeRoom", r);
+  room = r;
+}
 
+function drawRoom(curRoom){
+  let img  = new Image()
+  if(curRoom == 0){
+    img.src = 'images/miscassets/boombox.png'
+
+    c.drawImage(img, 700, 200, 150, 150 * img.height / img.width)
+  }
+}
+update()
