@@ -28,6 +28,10 @@ class Player {
     this.room = 0;
   }
 
+  changeRoom(room) {
+    this.room = room;
+  }
+
 }
 
 const backplayers = {};
@@ -42,7 +46,7 @@ var playerSpeed = 2;
 io.on("connection", (socket) => {
   console.log("player connected");
   backplayers[socket.id] = new Player(100, 100, playerimage, 'triangle');
-
+  backplayers[socket.id].changeRoom(0);
   // io.emit("updatePlayers", backplayers);
 
   //console.log(backplayers);
@@ -87,6 +91,11 @@ io.on("connection", (socket) => {
   socket.on('keyup', () => {
     backplayers[socket.id].action = 'still'
   })
+
+  socket.on('changeRoom', (room) => {
+    backplayers[socket.id].room = room;
+    
+  })
   
 });
 
@@ -94,6 +103,15 @@ server.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
+
 setInterval(() => {
   io.emit("updatePlayers", backplayers);
 }, 15);
+
+var fs = require('fs');
+let lobbymusiclist = []
+
+fs.readdirSync('public/audio/music/lobby/').forEach(file => {
+  lobbymusiclist.push(file)
+  io.emit('sendLobbyMusic', lobbymusiclist)
+})

@@ -31,4 +31,9 @@ button{
 }button:hover{
     border-radius: 40%;
     transition: border-radius 0.5s;
+}#changeLobby{
+    position: absolute;
+    top: 3vh;
+    left: 70vw;
+    background-color: red;
 }

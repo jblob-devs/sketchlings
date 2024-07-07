@@ -2,109 +2,130 @@
 <html>
   <body>
     <div id="playscreen">
-
-    <canvas id="canvas"></canvas>
-    <div
-      id="movementJoy"
-    ></div>
-    <button id="toggleMusic" ><img src="images/miscassets/musicnote.png" width="auto" height="20vh"/></button>
-    <button id="toggleSettings">settings :|</button>
-    <!--
+      <canvas id="canvas"></canvas>
+      <div id="movementJoy"></div>
+      <button id="toggleMusic">
+        <img src="images/miscassets/musicnote.png" width="auto" height="20vh" />
+      </button>
+      <button id="toggleSettings">settings :|</button>
+      <button id="changeLobby">Change Lobby</button>
+      <!--
     <img id="tempplayer" src="/images/characters/triangle/gray/trianglegraystanding.png" />
-    -->
-  </div>
-</body>
-  
-<head>
-<script
+    --></div>
+  </body>
+
+  <head>
+    <script
       src="https://cdn.socket.io/4.7.5/socket.io.min.js"
       integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
       crossorigin="anonymous"
-></script>
-<script
+    ></script>
+    <script
       src="https://code.jquery.com/jquery-3.7.1.min.js"
       integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
       crossorigin="anonymous"
-></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="joy.js"></script>
-  <script src="index.js"></script>
-  <script src="sounds.js"></script>
-  <link rel="stylesheet" href="index.css">
-    
-    
-</head>
-<script>
-  var lobbymusictoggled = false;
-  var movementjoystick = new JoyStick("movementJoy",{'internalFillColor':'#F6E3BA ', 'internalStrokeColor':'#DFCAA0', 'externalLineWidth': '1', 'externalStrokeColor': '#CFB284'});
+    ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="joy.js"></script>
+    <script src="index.js"></script>
+    <script src="sounds.js"></script>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <script>
+    var lobbymusictoggled = false;
+    var movementjoystick = new JoyStick("movementJoy", {
+      internalFillColor: "#F6E3BA ",
+      internalStrokeColor: "#DFCAA0",
+      externalLineWidth: "1",
+      externalStrokeColor: "#CFB284",
+    });
 
-  let joystickon = false;
+    let joystickon = false;
 
-  setInterval(function(){
-    if(joystickon){
-      $("#movementJoy").show()
+    setInterval(function () {
+      if (joystickon) {
+        $("#movementJoy").show();
 
-    if(movementjoystick.GetX() > 50){
-      keys.d.pressed = true;
-      keys.a.pressed = false;
-    }
-    if(movementjoystick.GetX() < -50){
-      keys.a.pressed = true;
-      keys.d.pressed = false;
-    }
-    if(movementjoystick.GetY() > 50){
-      keys.w.pressed = true;
-      keys.s.pressed = false;
-    }
-    if(movementjoystick.GetY() < -50){
-      keys.s.pressed = true;
-      keys.w.pressed = false;
-    }
-    if(movementjoystick.GetX() == 0 && movementjoystick.GetY() == 0){
-      keys.w.pressed = false;
-      keys.a.pressed = false;
-      keys.s.pressed = false;
-      keys.d.pressed = false;
-      socket.emit('keyup')
-    }
-  }else{
-    $("#movementJoy").hide()
-  }
-  },15)
-
-  
-//settings click
-$("#toggleSettings").on('click',function(){
-    Swal.fire({
-      title: 'Settings',
-      text: 'Select an option',
-      showCloseButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Joystick',
-      cancelButtonText: 'Music'
-    }).then((result) => {
-      if(result.isConfirmed){
-        Swal.fire({
-          title: 'Joystick Options',
-          showCancelButton: true,
-          confirmButtonText: 'Toggle On',
-          cancelButtonText: 'Toggle Off'
-        }).then((result) => {
-          if(result.isConfirmed){
-            joystickon = true;
-          }else{
-            joystickon = false;
-          }
-        })
-      }else{
-        Swal.fire('poo')
+        if (movementjoystick.GetX() > 50) {
+          keys.d.pressed = true;
+          keys.a.pressed = false;
+        }
+        if (movementjoystick.GetX() < -50) {
+          keys.a.pressed = true;
+          keys.d.pressed = false;
+        }
+        if (movementjoystick.GetY() > 50) {
+          keys.w.pressed = true;
+          keys.s.pressed = false;
+        }
+        if (movementjoystick.GetY() < -50) {
+          keys.s.pressed = true;
+          keys.w.pressed = false;
+        }
+        if (movementjoystick.GetX() == 0 && movementjoystick.GetY() == 0) {
+          keys.w.pressed = false;
+          keys.a.pressed = false;
+          keys.s.pressed = false;
+          keys.d.pressed = false;
+          socket.emit("keyup");
+        }
+      } else {
+        $("#movementJoy").hide();
       }
-    })
-})
+    }, 15);
 
+    //settings click
+    $("#toggleSettings").on("click", function () {
+      Swal.fire({
+        title: "Settings",
+        text: "Select an option",
+        showCloseButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Joystick",
+        cancelButtonText: "Music",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Joystick Options",
+            showCancelButton: true,
+            confirmButtonText: "Toggle On",
+            cancelButtonText: "Toggle Off",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              joystickon = true;
+            } else {
+              joystickon = false;
+            }
+          });
+        } else {
+          Swal.fire("poo");
+        }
+      });
+    });
 
+    //lobby changer
+    $("#changeLobby").on("click", async function () {
+      const { value: lobby } = await Swal.fire({
+        title: "Select a lobby",
+        input: "select",
+        inputOptions: {
+          0: "Lobby 1",
+          1: "Lobby 2",
+          2: "Lobby 3",
+          3: "Lobby 4",
+        },
+        inputPlaceholder: "Select a lobby",
+        showCancelButton: true,
+      });
+      if (lobby) {
+        changeRoom(Number(lobby));
+      }
+    });
   </script>
 </html>

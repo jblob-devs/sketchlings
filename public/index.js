@@ -3,9 +3,11 @@ const c = canvas.getContext("2d");
 const socket = io();
 console.log("connected to server");
 let globalID = "";
+
+
 //const scoreEl = document.querySelector('#scoreEl')
 socket.on("connect", () => {
-  console.log(socket.id);
+  console.log("SID",socket.id);
   globalID = socket.id;
 });
 canvas.width = innerWidth;
@@ -27,20 +29,17 @@ class Player {
     this.animframe = 1;
     this.timerout = null;
     this.room = 0;
-
-    console.log(this.action)
   }
 
   draw() {
 
-    const imageP = new Image();
 
-    console.log(this.action)
+    //console.log(this.action)
 
     if(this.action == 'still'){
       
       // console.log('<--- Counter: Amt of rights sairam has lost')
-      imageP.src = moveAnimation(this.type, this.color, 'still', this.animframe)
+      this.image = moveAnimation(this.type, this.color, 'still', this.animframe)
       //c.drawImage(imageP, this.x, this.y);
 
     }else if(this.action == 'move'){
@@ -63,14 +62,15 @@ class Player {
 
         }
         
-        imageP.src = moveAnimation(this.type, this.color, this.direction, this.animframe)
+       this.image = moveAnimation(this.type, this.color, this.direction, this.animframe)
         //c.drawImage(imageP, this.x, this.y);
 
       }
     }
 
   //imageP.src = 'images/characters/triangle/gray/runrightframe4.png'
-   socket.emit('updateAnim', imageP.src)
+  //console.log(this.image)
+   socket.emit('updateAnim', this.image)
     
   }
 
@@ -78,6 +78,7 @@ class Player {
 
 let room = 0;
 const players = {};
+let curRoom = -1;
 
 socket.on("updatePlayers", (backendPlayers) => {
   for (let playerID in backendPlayers) {
@@ -90,7 +91,7 @@ socket.on("updatePlayers", (backendPlayers) => {
         'triangle',
         backendPlayer.room
       )
-      console.log(backendPlayer.room)
+      //console.log(backendPlayer.room)
     } else {
       if(playerID == socket.id){
         players[playerID].x = backendPlayer.x;
@@ -102,15 +103,26 @@ socket.on("updatePlayers", (backendPlayers) => {
       }else{
         players[playerID].x = backendPlayer.x;
         players[playerID].y = backendPlayer.y;
+        players[playerID].direction = backendPlayer.direction;
+        players[playerID].action = backendPlayer.action;
+        players[playerID].room = backendPlayer.room;
+        //players[playerID].image = backendPlayer.image;
       }
       
     }
-    players[playerID].image = backendPlayer.image;
+    if(curRoom != players[playerID].room){
+      //call change room function
+      curRoom = players[playerID].room
+    }
+    // console.log(players)
 
+    players[playerID].image = backendPlayer.image;
+    // console.log(players[playerID].image)
   }
 
   for (const id in players) {
     if (!backendPlayers[id]) {
+      console.log("deleting player", id);
       delete players[id];
     }
   }
@@ -134,24 +146,18 @@ const keys = {
   },
 };
 
-var playerspeed = 2;
-
 setInterval(() => {
   if (!players[socket.id]) return;
   if (keys.w.pressed) {
-    players[socket.id].y -= playerspeed;
     socket.emit("keypress", "KeyW");
   }
   if (keys.a.pressed) {
-    players[socket.id].x -= playerspeed;
     socket.emit("keypress", "KeyA");
   }
   if (keys.s.pressed) {
-    players[socket.id].y += playerspeed;
     socket.emit("keypress", "KeyS");
   }
   if (keys.d.pressed) {
-    players[socket.id].x += playerspeed;
     socket.emit("keypress", "KeyD");
   }
 }, 15);
@@ -230,8 +236,12 @@ function update() {
   c.clearRect(0, 0, canvas.width, canvas.height);
   //console.log('ue')
   // Draw all players
-  
+  drawRoom(curRoom)
   for (let id in players) {
+    //console.log(players[id].room)
+    if (players[id].room != curRoom) {
+      continue;
+    }
     //console.log(players)
     players[id].draw();
     //console.log(players)
@@ -240,6 +250,7 @@ function update() {
     newimg.src = players[id].image
     //console.log(players[id].image)
    // newimg.src = testingimage
+  //  console.log(players[id].image)
     c.drawImage(newimg, players[id].x, players[id].y)
   }
  
@@ -247,12 +258,17 @@ function update() {
   requestAnimationFrame(update);
 }
 
-//setInterval(update, 15)
-
-function changeRoom(num){
-  room = num;
-  players[socket.id].room = room;
+function changeRoom(r) {
+  socket.emit("changeRoom", r);
+  room = r;
 }
 
+function drawRoom(curRoom){
+  let img  = new Image()
+  if(curRoom == 0){
+    img.src = 'images/miscassets/boombox.png'
 
+    c.drawImage(img, 700, 200, 150, 150 * img.height / img.width)
+  }
+}
 update()
