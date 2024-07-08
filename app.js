@@ -26,6 +26,7 @@ class Player {
     this.animframe = 1;
     this.timerout = null;
     this.room = 0;
+    this.username = '';
   }
 
   changeRoom(room) {
@@ -45,8 +46,13 @@ var playerSpeed = 2;
 
 io.on("connection", (socket) => {
   console.log("player connected");
-  backplayers[socket.id] = new Player(100, 100, playerimage, 'triangle');
-  backplayers[socket.id].changeRoom(0);
+
+  socket.on('intializeGame', (result)=>{
+    backplayers[socket.id] = new Player(100, 100, playerimage, 'triangle');
+    backplayers[socket.id].changeRoom(0);
+    backplayers[socket.id].username = result
+  })
+  
   // io.emit("updatePlayers", backplayers);
 
   //console.log(backplayers);
@@ -81,10 +87,18 @@ io.on("connection", (socket) => {
         backplayers[socket.id].x += playerSpeed;
         //backplayers[socket.id].direction = 'right'
         break;
+      case "Space":
+        console.log(backplayers[socket.id].x + " " + backplayers[socket.id].y);
+        if (backplayers[socket.id].x <= 850 && backplayers[socket.id].x >= 650 && backplayers[socket.id].y >= 150 && backplayers[socket.id].y <= 300) {
+          backplayers[socket.id].x = 600;
+          backplayers[socket.id].y = 600;
+        }
+        break;
     }
   });
 
   socket.on('updateAnim', (imageemitted) =>{
+    if (!backplayers[socket.id]) return;
     backplayers[socket.id].image = imageemitted;
   })
   
