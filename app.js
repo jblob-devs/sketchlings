@@ -48,7 +48,7 @@ io.on("connection", (socket) => {
   console.log("player connected");
 
   socket.on('intializeGame', (result)=>{
-    backplayers[socket.id] = new Player(100, 100, playerimage, 'triangle');
+    backplayers[socket.id] = new Player(getRandomInt(100,500), getRandomInt(100,500), playerimage, 'triangle');
     backplayers[socket.id].changeRoom(0);
     backplayers[socket.id].username = result
   })
@@ -110,8 +110,15 @@ io.on("connection", (socket) => {
     backplayers[socket.id].room = room;
     
   })
+  socket.on('newUser', (username) => {
+    io.emit('newUser', username)
+  })
   
 });
+
+
+
+
 
 server.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
@@ -129,3 +136,7 @@ fs.readdirSync('public/audio/music/lobby/').forEach(file => {
   lobbymusiclist.push(file)
   io.emit('sendLobbyMusic', lobbymusiclist)
 })
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * max) + min;
+}

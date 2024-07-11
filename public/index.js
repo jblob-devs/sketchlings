@@ -3,24 +3,53 @@ const c = canvas.getContext("2d");
 const socket = io();
 console.log("connected to server");
 let globalID = "";
-
-$(document).ready(function () {
+let allowEmit = false;
+$(document).ready(async function () {
+  let name = "";
   Swal.fire({
     title: "Sketchlings",
     text: "input your username!",
     allowOutsideClick: false,
     imageUrl: "images/characters/triangle/gray/standing1.png",
     input: "text",
+    
     inputPlaceholder: "Username",
     inputAttributes: {
-      maxlength: "15"
-      ,
+      maxlength: "150",
+    
+    },
+    inputValidator: async (value) => {
+      if (!value) {
+        randanimal = await getrandanimal();
+        let randchance = getRandomInt(1, 3);
+        randadj = await getrandadjectives(1)
+        randnoun = await getrandomnoun()
+        let word = ""
+        if(randchance == 1){
+          let randint = getRandomInt(0,11)
+          let namearray = ['sir ',"dr. ","lord ", "count ", "king ", "queen ", "Master ", "chief ", "duke ", "president ", "primate ", "captain "]
+          word = namearray[randint]
+        }
+        name = word + randadj + " " + randanimal
+        socket.emit("newUser", name)
+      }
     },
   }).then((result) => {
-    socket.emit("intializeGame", result.value);
+    if (result.value) {
+      name = result.value;
+    }
+    allowEmit = true;
+    socket.emit("intializeGame", name);
   });
 });
-
+socket.on("newUser", (name) => {
+  if (allowEmit) {
+    Toast.fire({
+      icon: "success",
+      title: name + " has joined the game",
+    });
+  }
+});
 //const scoreEl = document.querySelector('#scoreEl')
 socket.on("connect", () => {
   // socket.emit('intializeGame', '')
@@ -106,6 +135,11 @@ socket.on("updatePlayers", (backendPlayers) => {
         "triangle",
         backendPlayer.room
       );
+      // Toast.fire({
+      //   icon: "success",
+      //   title: backendPlayer.username + " has joined the game",
+      // });
+
       //console.log(backendPlayer.room)
     } else {
       if (playerID == socket.id) {
@@ -126,10 +160,10 @@ socket.on("updatePlayers", (backendPlayers) => {
         //players[playerID].image = backendPlayer.image;
       }
     }
-    if (curRoom != players[playerID].room) {
-      //call change room function
-      curRoom = players[playerID].room;
-    }
+    // if (curRoom != players[playerID].room) {
+    //   //call change room function
+    //   curRoom = players[playerID].room;
+    // }
     // console.log(players)
 
     players[playerID].image = backendPlayer.image;
@@ -280,6 +314,74 @@ function update() {
   requestAnimationFrame(update);
 }
 
+async function getrandanimal() {
+  let url = "https://random-word-form.herokuapp.com/random/animal?count=1";
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data[0];
+  } catch (error) {
+    console.error("Failed to fetch random username:", error);
+    return null;
+  }
+}
+
+async function getrandomnoun() {
+  let url = "https://random-word-form.herokuapp.com/random/noun?count=1";
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data[0];
+  } catch (error) {
+    console.error("Failed to fetch random username:", error);
+    return null;
+  }
+}
+
+
+async function getrandadjectives(amount){
+  let url = 'https://random-word-form.herokuapp.com/random/adjective'
+  url += '?count=' + amount
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(data);
+
+    return data[0];
+  } catch (error) {
+    console.error("Failed to fetch random username:", error);
+    return null;
+  }
+}
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-start",
+  iconColor: "white",
+  customClass: {
+    popup: "colored-toast",
+  },
+  showConfirmButton: false,
+  timer: 1500,
+  timerProgressBar: true,
+});
+
 function changeRoom(r) {
   socket.emit("changeRoom", r);
   room = r;
@@ -291,6 +393,19 @@ function drawRoom(curRoom) {
     img.src = "images/miscassets/boombox.png";
 
     c.drawImage(img, 700, 200, 150, (150 * img.height) / img.width);
+  }else if(curRoom == 1){
+    if(allowEmit){
+      Toast.fire({
+        title:'Skirmish',
+        text: "It's a free for all! Fight and survive!"
+      })
+    }
+    
+
   }
 }
 update();
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * max) + min;
+}

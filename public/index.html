@@ -111,6 +111,7 @@
 
     //lobby changer
     $("#changeLobby").on("click", async function () {
+      allowEmit = false;
       const { value: lobby } = await Swal.fire({
         title: "Select a lobby",
         input: "select",
