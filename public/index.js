@@ -122,7 +122,7 @@ class Player {
 
 let room = 0;
 const players = {};
-let curRoom = -1;
+let curRoom = 0;
 
 socket.on("updatePlayers", (backendPlayers) => {
   for (let playerID in backendPlayers) {
@@ -160,10 +160,11 @@ socket.on("updatePlayers", (backendPlayers) => {
         //players[playerID].image = backendPlayer.image;
       }
     }
-    // if (curRoom != players[playerID].room) {
+    
+    if (curRoom != players[socket.id].room) {
     //   //call change room function
-    //   curRoom = players[playerID].room;
-    // }
+       curRoom = players[socket.id].room;
+    }
     // console.log(players)
 
     players[playerID].image = backendPlayer.image;
