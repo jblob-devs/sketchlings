@@ -31,13 +31,22 @@
       href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap"
       rel="stylesheet"
     />
+
+    <!--load scripts here-->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="joy.js"></script>
-    <script src="index.js"></script>
-    <script src="sounds.js"></script>
+    <script src="js/joy.js"></script>
+    <script src="js/socket.js"></script>
+    <script src="js/sounds.js"></script>
+    <script src="js/click.js"></script>
+
+
+    <!--Load index.js last because it often need dependancies from other js files-->
+    <script src="js/index.js"></script>
+
     <link rel="stylesheet" href="index.css" />
   </head>
   <script>
+
     var lobbymusictoggled = false;
     var movementjoystick = new JoyStick("movementJoy", {
       internalFillColor: "#F6E3BA ",
@@ -128,5 +137,9 @@
         changeRoom(Number(lobby));
       }
     });
+
+    window.addEventListener('click', function(){
+      frontProjectiles.push(new Projectile(100, 100, 'images/miscassets/musicnote.png', 2))
+    })
   </script>
 </html>
