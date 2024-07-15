@@ -36,6 +36,8 @@ class Player {
 }
 
 const backplayers = {};
+const backProjectiles = {};
+let projectileId = 0;
 
 var triangleDefault = "/images/characters/triangle/gray/standing1.png";
 var circleDefault;
@@ -122,6 +124,22 @@ io.on("connection", (socket) => {
     io.emit('sendLobbyMusic', lobbymusiclist)
   })
 
+  socket.on('castPage', ({x, y, angle})=>{
+    projectileId++
+
+    const velocity = {
+      x: Math.cos(angle) * 5,
+      y: Math.sin(angle) * 5
+    }
+    backProjectiles[projectileId] = {
+      x,
+      y,
+      velocity,
+      //who shooting the projectile!!! VVVV
+      playerId: socket.id
+    }
+  })
+
   
 });
 
@@ -136,9 +154,17 @@ server.listen(port, () => {
 
 
 setInterval(() => {
+  updateProjectiles()
+  io.emit('updateProjectiles', backProjectiles)
   io.emit("updatePlayers", backplayers);
 }, 15);
 
+function updateProjectiles(){
+  for (const id in backProjectiles){
+    backProjectiles[id].x += backProjectiles[id].velocity.x
+    backProjectiles[id].y += backProjectiles[id].velocity.y
+  }
+}
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * max) + min;

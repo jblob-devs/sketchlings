@@ -165,8 +165,10 @@ async function getrandadjectives(amount){
 }
 
 let room = 0;
-const players = {};
 let curRoom = 0;
+const players = {};
+const projectiles = {}
+
 
 const keys = {
   w: {
@@ -345,4 +347,23 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * max) + min;
 }
 
+
+window.addEventListener('click', (event) => {
+  if(!players[socket.id]){return}
+    const pPosition = {
+      x: players[socket.id].x,
+      y: players[socket.id].y
+    }
+  
+  const angle = Math.atan2(
+    event.clientY * window.devicePixelRatio - pPosition.y,
+    event.clientX * window.devicePixelRatio - pPosition.x,
+  )
+  socket.emit('castPage', {
+    x: pPosition.x,
+    y: pPosition.y,
+    angle
+  })
+
+})
 

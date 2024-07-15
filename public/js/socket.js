@@ -77,6 +77,16 @@ socket.on("updatePlayers", (backendPlayers) => {
     }
   });
   
+  socket.on("updateProjectiles", (backendProjectiles) => {
+    for (const id in backendProjectiles){
+      const backEndProjectile = backendProjectiles[id]
+
+      if(!projectiles[id]){
+        projectiles[id] = new Projectile({x: backEndProjectile.x ,y: backEndProjectile.y,image:'images/miscassets/musicnote.png', velocity: backEndProjectile.velocity})
+      }
+    }
+
+  })
 
   
 socket.on('sendLobbyMusic', (musiclist)=>{
